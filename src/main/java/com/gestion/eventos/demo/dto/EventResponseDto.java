@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @Data
-@JsonPropertyOrder({"id", "name", "date", "location"})
+@JsonPropertyOrder({ "id", "name", "date", "location" })
 public class EventResponseDto {
     private Long id;
     private String name;

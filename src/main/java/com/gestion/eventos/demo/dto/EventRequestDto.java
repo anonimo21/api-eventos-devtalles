@@ -8,13 +8,13 @@ import lombok.Data;
 
 @Data
 public class EventRequestDto {
-    
+
     @NotBlank(message = "El nombre es obligatorio")
     private String name;
-    
+
     @NotNull(message = "La fecha es obligatoria")
     private LocalDate date;
-    
+
     @NotBlank(message = "La ubicación es obligatoria")
     private String location;
 

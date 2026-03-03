@@ -52,7 +52,8 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id, @Valid @RequestBody EventRequestDto requestDto){
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id,
+            @Valid @RequestBody EventRequestDto requestDto) {
         Event eventToUpdate = eventService.findById(id);
         eventMapper.updateEventFromDto(requestDto, eventToUpdate);
         Event updateEvent = eventService.save(eventToUpdate);

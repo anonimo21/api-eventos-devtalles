@@ -22,15 +22,16 @@ public class EventService implements IEventService {
     }
 
     @Override
-    //metodo para actualizar y guardar
+    // metodo para actualizar y guardar
     public Event save(Event event) {
         return eventRepository.save(event);
     }
 
     @Override
     public Event findById(Long id) {
-                
-        return eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + id));
+
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + id));
     }
 
     @Override
