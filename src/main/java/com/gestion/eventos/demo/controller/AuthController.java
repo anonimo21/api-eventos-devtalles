@@ -1,18 +1,27 @@
 package com.gestion.eventos.demo.controller;
 
+import java.util.Collections;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gestion.eventos.demo.domain.Role;
+import com.gestion.eventos.demo.domain.User;
 import com.gestion.eventos.demo.dto.JwtAuthResponseDto;
 import com.gestion.eventos.demo.dto.LoginDto;
+import com.gestion.eventos.demo.dto.RegisterDto;
+import com.gestion.eventos.demo.mapper.UserMapper;
+import com.gestion.eventos.demo.repository.RoleRepository;
+import com.gestion.eventos.demo.repository.UserRepository;
 import com.gestion.eventos.demo.security.jwt.JwtGenerator;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +33,10 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtGenerator jwtGenerator;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper; 
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponseDto> authenticateUser(@RequestBody LoginDto loginDto) {
@@ -36,4 +49,25 @@ public class AuthController {
 
         return new ResponseEntity<>(new JwtAuthResponseDto(token), HttpStatus.OK);
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody RegisterDto registerDto) {
+        if (userRepository.existsByUsername(registerDto.getUsername())) {
+            return new ResponseEntity<>("Nombre de usuario ya existe", HttpStatus.BAD_REQUEST);
+        }
+        if (userRepository.existsByEmail(registerDto.getEmail())) {
+            return new ResponseEntity<>("Email de usuario ya existe", HttpStatus.BAD_REQUEST);
+        }
+        User user = userMapper.registerDtoToUser(registerDto);
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+
+        Role roles = roleRepository.findByName("ROLE_USER")
+            .orElseThrow(()->
+            new RuntimeException("Error, El rol de usuario no existe")
+        );
+        user.setRoles(Collections.singleton(roles));
+        userRepository.save(user);
+        return new ResponseEntity<>("Usuario registrado", HttpStatus.CREATED);
+    }
+    
 }
