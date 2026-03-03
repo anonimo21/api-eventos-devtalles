@@ -1,4 +1,4 @@
-package com.gestion.eventos.demo.security;
+package com.gestion.eventos.demo.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

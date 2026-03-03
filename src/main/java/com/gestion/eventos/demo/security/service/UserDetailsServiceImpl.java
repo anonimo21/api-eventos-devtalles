@@ -1,4 +1,4 @@
-package com.gestion.eventos.demo.service;
+package com.gestion.eventos.demo.security.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

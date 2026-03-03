@@ -1,4 +1,4 @@
-package com.gestion.eventos.demo.controller;
+package com.gestion.eventos.demo.security.controller;
 
 import java.util.Collections;
 
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gestion.eventos.demo.domain.Role;
 import com.gestion.eventos.demo.domain.User;
-import com.gestion.eventos.demo.dto.JwtAuthResponseDto;
-import com.gestion.eventos.demo.dto.LoginDto;
-import com.gestion.eventos.demo.dto.RegisterDto;
+import com.gestion.eventos.demo.security.dto.JwtAuthResponseDto;
+import com.gestion.eventos.demo.security.dto.LoginDto;
+import com.gestion.eventos.demo.security.dto.RegisterDto;
 import com.gestion.eventos.demo.mapper.UserMapper;
 import com.gestion.eventos.demo.repository.RoleRepository;
 import com.gestion.eventos.demo.repository.UserRepository;
