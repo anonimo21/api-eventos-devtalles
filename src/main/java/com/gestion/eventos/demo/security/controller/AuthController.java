@@ -1,7 +1,13 @@
 package com.gestion.eventos.demo.security.controller;
 
-import java.util.Collections;
-
+import com.gestion.eventos.demo.domain.User;
+import com.gestion.eventos.demo.security.dto.JwtAuthResponseDto;
+import com.gestion.eventos.demo.security.dto.LoginDto;
+import com.gestion.eventos.demo.security.dto.RegisterDto;
+import com.gestion.eventos.demo.mapper.UserMapper;
+import com.gestion.eventos.demo.repository.UserRepository;
+import com.gestion.eventos.demo.security.jwt.JwtGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,18 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gestion.eventos.demo.domain.Role;
-import com.gestion.eventos.demo.domain.User;
-import com.gestion.eventos.demo.security.dto.JwtAuthResponseDto;
-import com.gestion.eventos.demo.security.dto.LoginDto;
-import com.gestion.eventos.demo.security.dto.RegisterDto;
-import com.gestion.eventos.demo.mapper.UserMapper;
-import com.gestion.eventos.demo.repository.RoleRepository;
-import com.gestion.eventos.demo.repository.UserRepository;
-import com.gestion.eventos.demo.security.jwt.JwtGenerator;
-
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -34,9 +28,8 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtGenerator jwtGenerator;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper; 
+    private final UserMapper userMapper;
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponseDto> authenticateUser(@RequestBody LoginDto loginDto) {
@@ -53,21 +46,18 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterDto registerDto) {
         if (userRepository.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>("Nombre de usuario ya existe", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Nombre de usuario, ya existe...", HttpStatus.BAD_REQUEST);
         }
         if (userRepository.existsByEmail(registerDto.getEmail())) {
-            return new ResponseEntity<>("Email de usuario ya existe", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Email de usuario, ya existe...", HttpStatus.BAD_REQUEST);
         }
+
         User user = userMapper.registerDtoToUser(registerDto);
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-        Role roles = roleRepository.findByName("ROLE_USER")
-            .orElseThrow(()->
-            new RuntimeException("Error, El rol de usuario no existe")
-        );
-        user.setRoles(Collections.singleton(roles));
         userRepository.save(user);
-        return new ResponseEntity<>("Usuario registrado", HttpStatus.CREATED);
+
+        return new ResponseEntity<>("Usuario registrado...", HttpStatus.CREATED);
     }
-    
+
 }

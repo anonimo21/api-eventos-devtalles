@@ -1,15 +1,19 @@
 package com.gestion.eventos.demo.service;
 
-import java.util.List;
-
 import com.gestion.eventos.demo.domain.Event;
+import com.gestion.eventos.demo.dto.EventRequestDto;
+import com.gestion.eventos.demo.dto.EventResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IEventService {
-    List<Event> findAll();
+    Page<EventResponseDto> findAll(String name, Pageable pageable);
 
-    Event save(Event event);
+    Event save(EventRequestDto event);
 
     Event findById(Long id);
+
+    Event update(Long id, EventRequestDto requestDto);
 
     void deleteById(Long id);
 }
