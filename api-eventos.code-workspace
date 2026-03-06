@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../my-portfolio-backend"
+		},
+		{
+			"path": "../angular-cors-main"
 		}
 	],
 	"settings": {

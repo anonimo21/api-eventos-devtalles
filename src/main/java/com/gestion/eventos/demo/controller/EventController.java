@@ -7,6 +7,9 @@ import com.gestion.eventos.demo.mapper.EventMapper;
 import com.gestion.eventos.demo.service.IEventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -24,6 +27,24 @@ public class EventController {
 
     private final IEventService eventService;
     private final EventMapper eventMapper;
+
+    @GetMapping("/problematic")
+    public ResponseEntity<List<Event>> getEventsProblematic(@RequestParam String param) {
+        List<Event> events = eventService.getAllEventsAndTheirDetailsProblematic();
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/optimized-join-fetch")
+    public ResponseEntity<List<Event>> getEventsOptimizedWithJoinFetch() {
+        List<Event> events = eventService.getAllEventsAndTheirDetailsOptimizedWithJoinFetch();
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/optimized/all-details")
+    public ResponseEntity<List<Event>> getEventsWithAllDetails() {
+        List<Event> events = eventService.findAllEventsWithAllDetailsOptimized();
+        return ResponseEntity.ok(events);
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")

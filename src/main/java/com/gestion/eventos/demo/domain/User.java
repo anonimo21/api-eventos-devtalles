@@ -1,5 +1,6 @@
 package com.gestion.eventos.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,6 +31,7 @@ public class User {
     @JoinTable(name = "user_attended_events", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<Event> attendedEvents = new HashSet<>();
 
     public void addAttendedEvent(Event event) {

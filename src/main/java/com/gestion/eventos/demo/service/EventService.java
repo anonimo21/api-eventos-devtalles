@@ -3,6 +3,7 @@ package com.gestion.eventos.demo.service;
 import com.gestion.eventos.demo.domain.Category;
 import com.gestion.eventos.demo.domain.Event;
 import com.gestion.eventos.demo.domain.Speaker;
+import com.gestion.eventos.demo.domain.User;
 import com.gestion.eventos.demo.dto.EventRequestDto;
 import com.gestion.eventos.demo.dto.EventResponseDto;
 import com.gestion.eventos.demo.exception.ResourceNotFoundException;
@@ -116,6 +117,64 @@ public class EventService implements IEventService {
     public void deleteById(Long id) {
         Event eventToDelete = this.findById(id);
         eventRepository.delete(eventToDelete);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> getAllEventsAndTheirDetailsProblematic() {
+        List<Event> events = eventRepository.findAll();
+        events.forEach(event -> {
+            event.getSpeakers().size();
+            event.getSpeakers().stream().map(Speaker::getName).collect(Collectors.toSet());
+            event.getCategory().getName();
+            event.getAttendedUsers().size();
+        });
+        return events;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> getAllEventsAndTheirDetailsOptimizedWithJoinFetch() {
+        List<Event> events = eventRepository.findAllWithCategoryAndSpeakers();
+        events.forEach(event -> {
+            System.out.println("Event: " + event.getName());
+            System.out.println("Category: " + event.getCategory().getName());
+            System.out.println(
+                    "Speakers: " + event.getSpeakers().stream().map(Speaker::getName).collect(Collectors.joining(", ")));
+        });
+        return events;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> findAllEventsWithAllDetailsOptimized() {
+        System.out.println("\n--- DEMO: findAllWithAllDetails (@EntityGraph con Category, Speakers, AttendedUsers) ---");
+
+        List<Event> events = eventRepository.findAllWithDetails();
+
+        events.forEach(event -> {
+
+                    System.out.println("Event ID: " + event.getId());
+                    System.out.println("Event Name: " + event.getName());
+
+                    if (event.getCategory() != null) {
+                        System.out.println("  Category: " + event.getCategory().getName());
+                    } else {
+                        System.out.println("  Category: N/A");
+                    }
+
+                    if (event.getSpeakers() != null && !event.getSpeakers().isEmpty()) {
+                        System.out.println("  Speakers: " + event.getSpeakers().stream().map(Speaker::getName).collect(Collectors.joining(", ")));
+                    } else {
+                        System.out.println("  Speakers: N/A");
+                    }
+
+                    if (event.getAttendedUsers() != null && !event.getAttendedUsers().isEmpty()) {
+                        System.out.println("  Attended Users: " + event.getAttendedUsers().stream().map(User::getUsername).collect(Collectors.joining(", ")));
+                    } else {
+                        System.out.println("  Attended Users: N/A");
+                    }
+                    System.out.println("---");
+                }
+        );
+        return events;
     }
 
 }
