@@ -34,5 +34,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @EntityGraph(attributePaths = { "category", "speakers", "attendedUsers" })
     @Query("SELECT e FROM Event e")
-    List<Event> findAllWithDetails();
+    List<Event> findAllWithAllDetails();
 }

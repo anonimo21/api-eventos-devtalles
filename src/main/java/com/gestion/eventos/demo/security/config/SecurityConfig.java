@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -31,6 +33,7 @@ public class SecurityConfig {
         private final UserDetailsService userDetailsService;
         private final JwtAuthEntryPoint jwtAuthEntryPoint;
         private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final Environment environment;
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,11 +43,20 @@ public class SecurityConfig {
                                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/v1/auth/**").permitAll()
-                                                .requestMatchers("/h2-console/**").permitAll()
-                                                .anyRequest().authenticated())
-                                .headers(AbstractHttpConfigurer::disable);
+                                .authorizeHttpRequests(auth -> {
+                                        auth.requestMatchers("/api/v1/auth/**").permitAll();
+
+                                        if (environment.acceptsProfiles(Profiles.of("dev"))) {
+                                                auth.requestMatchers(
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html",
+                                                                "/v3/api-docs/**",
+                                                                "/v3/api-docs.yaml", 
+                                                                "/swagger-resources/**", 
+                                                                "/webjars/**").permitAll();
+                                        }
+                                        auth.anyRequest().authenticated(); 
+                                }); 
 
                 http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();
